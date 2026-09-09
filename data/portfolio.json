@@ -1,0 +1,78 @@
+{
+  "profile": {
+    "name": "남수한",
+    "job": "게임 클라이언트 프로그래머",
+    "introduction": "Unity와 C#을 활용해 게임 시스템과 UI를 구현합니다. 플레이 가능한 결과와 작업 문서로 개발 과정을 증명합니다.",
+    "email": "rnatpakfl@gmail.com",
+    "github": "https://github.com/namsuhan0322",
+    "profileImage": "images/profile.png",
+    "resume": "resume.html"
+  },
+  "skills": [
+    "C#",
+    "Unity",
+    "GitHub",
+    "JSON"
+  ],
+  "projects": [
+    {
+      "id": "farmdiary",
+      "title": "FarmDiary",
+      "thumbnail": "images/FarmDiary.png",
+      "description": "\"다른 작업을 하면서도 농장을 키운다!\" 방치형과 클리커 요소를 결합한 독특한 농사 시뮬레이션 게임입니다.",
+      "genre": "시뮬레이션, 전략, 캐주얼",
+      "platform": "PC",
+      "period": "2024.09 ~ 2024.12",
+      "team": {
+        "size": 5,
+        "myRole": "클라이언트 프로그래밍"
+      },
+      "contributions": [
+        "Windows API 기반 투명 오버레이 시스템 구현",
+        "OS 레벨 키보드 후킹 시스템 개발",
+        "FSM 기반 자동화 농사 AI 시스템 설계",
+        "카메라 및 UI 동적 대응 시스템 구현"
+      ],
+      "problemSolving": [
+        {
+          "problem": "Windows API 기반 투명 오버레이 시스템 구현 중 빌드 시 게임 백그라운드가 투명 상태가 아닌 검은 화면으로 출력되는 문제가 발생",
+          "solution": "인터넷 서칭 한 결과 유니티 URP 환경에서 카메라에 있는 HDR 기능을 off 하는 방법을 채택",
+          "result": "카메라에 있는 HDR 기능을 off 하고 빌드 후 테스트 진행 결과 정상적으로 투명백그라운드 적용이 되었습니다."
+        }
+      ],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/4635",
+        "video": "https://www.youtube.com/watch?v=MuO7iLbqNUI",
+        "github": "https://github.com/jinjooyoung/FarmDiary",
+        "document": "documents/project-document.html"
+      }
+    },
+    {
+      "id": "sky-glider-robo",
+      "title": "Sky Glider : Robo",
+      "thumbnail": "images/Sky-Glider.png",
+      "description": "풍선을 조종해 끝없이 하늘을 올라가는 하드코어 플랫포머 게임입니다.",
+      "genre": "플랫포머, 캐주얼",
+      "platform": "PC",
+      "period": "2025.03 ~ 2025.06",
+      "team": {
+        "size": 7,
+        "myRole": "클라이언트 프로그래밍"
+      },
+      "contributions": [
+        "데이터 파이프라인 및 에디터 툴 개발",
+        "플레이어 커스터마이징 시스템 구현",
+        "인벤토리 및 아이템 상태 관리 시스템 구현",
+        "업적 및 보상 시스템 설계",
+        "플랫포머 기믹 구현"
+      ],
+      "problemSolving": [],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/101523",
+        "video": "",
+        "github": "https://github.com/soeunparkk/MechaFloat_Project",
+        "document": ""
+      }
+    }
+  ]
+}
