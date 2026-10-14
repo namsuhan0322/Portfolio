@@ -39,7 +39,7 @@
         "play": "https://store.onstove.com/ko/games/4635",
         "video": "https://www.youtube.com/watch?v=MuO7iLbqNUI",
         "github": "https://github.com/jinjooyoung/FarmDiary",
-        "document": "documents/project-document.html"
+        "document": "documents/farmdiary.html"
       }
     },
     {
@@ -66,7 +66,7 @@
         "play": "https://store.onstove.com/ko/games/101523",
         "video": "",
         "github": "https://github.com/soeunparkk/MechaFloat_Project",
-        "document": ""
+        "document": "documents/sky-glider-robo.html"
       }
     },
     {
@@ -92,7 +92,7 @@
         "play": "https://store.onstove.com/ko/games/103410",
         "video": "",
         "github": "https://github.com/ahyun04/25_2_team",
-        "document": ""
+        "document": "documents/isekai-fish.html"
       }
     },
     {
@@ -123,7 +123,7 @@
         "play": "https://store.onstove.com/ko/games/104922",
         "video": "https://www.youtube.com/watch?v=55jtr3SpkoA",
         "github": "https://github.com/namsuhan0322/Last-Rites",
-        "document": ""
+        "document": "documents/last-rites.html"
       }
     }
   ]

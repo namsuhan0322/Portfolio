@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Last Rites 기술 문서 — 지루한 잡몹 사냥과 무의미한 파밍을 덜어내고, 거대 보스와의 공방에만 집중한 보스 레이드 액션 게임입니다."
+    />
+    <title>Last Rites 기술 문서</title>
+    <link rel="stylesheet" href="document.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="../index.html">← 포트폴리오</a>
+      <a class="sub" href="../project.html?id=last-rites">프로젝트 상세</a>
+    </header>
+    <main class="doc">
+      <p class="eyebrow">Technical Document · 액션 · 보스 레이드</p>
+      <h1>Last Rites</h1>
+      <p class="summary">
+        지루한 잡몹 사냥과 무의미한 파밍을 덜어내고, 거대 보스와의 공방에만
+        집중한 보스 레이드 액션 게임입니다.
+      </p>
+      <div class="facts">
+        <div class="fact">
+          <small>개발 기간</small><strong>2026.01 ~ 2026.06</strong
+          ><span>약 5개월</span>
+        </div>
+        <div class="fact">
+          <small>팀 구성</small><strong>2명</strong><span>프로그래밍 2</span>
+        </div>
+        <div class="fact">
+          <small>담당</small><strong>팀장 · 메인 프로그래머</strong
+          ><span>기획 · 클라이언트 프로그래밍</span>
+        </div>
+        <div class="fact">
+          <small>개발 환경</small><strong>Unity 6000.3.9f1</strong
+          ><span>PC</span>
+        </div>
+      </div>
+      <div class="links">
+        <a
+          class="button primary"
+          href="https://store.onstove.com/ko/games/104922"
+          target="_blank"
+          rel="noopener noreferrer"
+          >스토브에서 보기</a
+        ><a
+          class="button"
+          href="https://www.youtube.com/watch?v=55jtr3SpkoA"
+          target="_blank"
+          rel="noopener noreferrer"
+          >플레이 영상</a
+        ><a
+          class="button"
+          href="https://github.com/namsuhan0322/Last-Rites"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub</a
+        >
+      </div>
+      <ol class="toc">
+        <li><a href="#features">담당 구현</a></li>
+        <li><a href="#code">핵심 코드</a></li>
+        <li><a href="#troubleshooting">문제 해결</a></li>
+      </ol>
+      <section id="features">
+        <h2><span class="num">01</span>담당 구현</h2>
+        <p class="lead">
+          팀장이자 메인 프로그래머로 전투 구조를 설계하고, 로딩 · 저장처럼
+          플레이어가 직접 의식하지 않는 부분의 체감 품질을 개선했습니다.
+        </p>
+        <div class="features">
+          <article class="feature">
+            <h3>
+              <span class="idx">1.</span>Action 델리게이트 기반 Actor &amp; 전투
+              아키텍처
+            </h3>
+            <ul>
+              <li>
+                <code>OnDeath</code>, <code>OnHPChanged</code>,
+                <code>OnStun</code> 등 이벤트(Observer) 패턴으로 클래스 간
+                결합도 최소화
+              </li>
+              <li>
+                강인도(Poise) 시스템과 타이머 기반 무적(I-Frame) 등 소울라이크
+                핵심 전투 기믹 설계
+              </li>
+            </ul>
+            <p class="result">
+              <b>결과</b>유지보수와 확장이 쉬운 전투 시스템 구축, 타격감 있는
+              전투 템포 완성
+            </p>
+          </article>
+          <article class="feature">
+            <h3>
+              <span class="idx">2.</span>비동기 씬 로딩 최적화 및 동적 로딩 UX
+            </h3>
+            <ul>
+              <li>
+                <code>allowSceneActivation</code> 전환 시 발생하는 메인 스레드
+                프리징을 99% Creeping 로딩 연출로 가림
+              </li>
+              <li>
+                구조체(Struct)로 이동할 씬에 맞는 팁(Lore)과 일러스트를 로딩
+                화면에 동적으로 주입
+              </li>
+            </ul>
+            <p class="result">
+              <b>결과</b>읽기 병목 구간을 부드러운 연출로 감춰 로딩 체감 개선
+            </p>
+          </article>
+          <article class="feature">
+            <h3><span class="idx">3.</span>파일 I/O 병목 최적화</h3>
+            <ul>
+              <li>
+                대량 아이템 획득 시 반복 호출되던 Auto-Save 로직에 저장 여부
+                플래그 도입
+              </li>
+            </ul>
+            <p class="result">
+              <b>결과</b>대량 지급 시 디스크 저장을 한 번으로 줄여 프레임 드랍
+              해결 (아래 문제 해결 참고)
+            </p>
+          </article>
+        </div>
+      </section>
+      <section id="code">
+        <h2><span class="num">02</span>핵심 코드</h2>
+        <p class="lead">
+          유니티 비동기 로딩은 마지막에 씬을 활성화하는 순간 메인 스레드가
+          멈춥니다. 이 구간에 진행률이 멈춰 있으면 플레이어는 게임이 멈춘 것처럼
+          느끼기 때문에, 숫자가 99%까지 천천히 차오르는 연출을 먼저 보여주고 그
+          뒤에 활성화하도록 순서를 바꿨습니다.
+        </p>
+        <figure class="figure">
+          <div class="timeline">
+            <div class="phase">
+              <strong>실제 로딩</strong
+              ><span class="pct">op.progress &lt; 0.9</span
+              ><span
+                >allowSceneActivation = false로 자동 전환을 막고 로드 진행률
+                표시</span
+              >
+            </div>
+            <div class="phase">
+              <strong>Creeping 연출</strong><span class="pct">90% → 99%</span
+              ><span>unscaledDeltaTime × 0.05씩 증가 (약 1.8초)</span>
+            </div>
+            <div class="phase">
+              <strong>씬 활성화</strong><span class="pct">99% 유지</span
+              ><span
+                >allowSceneActivation = true — 프리징 구간을 99% 화면이
+                가림</span
+              >
+            </div>
+            <div class="phase">
+              <strong>완료</strong><span class="pct">100%</span
+              ><span>렌더링 팝인 방지를 위해 0.5초 대기 후 표시</span>
+            </div>
+          </div>
+          <figcaption>
+            LoadSceneWithLoading()의 로딩 단계. 로딩 전에 GC.Collect()와
+            UnloadUnusedAssets()로 이전 씬 메모리를 먼저 정리합니다.
+          </figcaption>
+        </figure>
+        <figure class="code">
+          <figcaption class="code-head">
+            <span>LoadSceneWithLoading() — 비동기 로딩과 99% Creeping 연출</span
+            ><span>C#</span>
+          </figcaption>
+          <pre><code><span class="c">// 핵심 로직: 비동기 로드 시 90% 구간에서 99%까지 서서히 차오르도록 유도하여 병목 현상을 시각적으로 방어</span>
+<span class="k">private</span> <span class="t">IEnumerator</span> <span class="f">LoadSceneWithLoading</span>(<span class="k">string</span> targetScene)
+{
+    <span class="t">TargetSceneName</span> = targetScene; <span class="c">// 씬별 맞춤형 일러스트 및 가이드 텍스트 세팅용</span>
+    <span class="t">LoadingProgress</span> = <span class="n">0f</span>;
+
+    <span class="c">// 이전 씬의 안 쓰는 메모리를 미리 해제하여 램(RAM) 병목 방지</span>
+    <span class="t">System</span>.GC.<span class="f">Collect</span>();
+    <span class="k">yield</span> <span class="k">return</span> <span class="t">Resources</span>.<span class="f">UnloadUnusedAssets</span>();
+
+    <span class="t">AsyncOperation</span> op = <span class="t">SceneManager</span>.<span class="f">LoadSceneAsync</span>(targetScene);
+    op.allowSceneActivation = <span class="k">false</span>; <span class="c">// 자동 씬 전환 방지</span>
+    <span class="k">bool</span> hasActivated = <span class="k">false</span>;
+
+    <span class="k">while</span> (!op.isDone)
+    {
+        <span class="k">if</span> (!hasActivated)
+            <span class="t">LoadingProgress</span> = <span class="t">Mathf</span>.<span class="f">Clamp01</span>((op.progress / <span class="n">0.9f</span>) * <span class="n">0.99f</span>);
+
+        <span class="c">// 로드가 90% 이상 완료되었을 때 (나머지 10%는 씬 활성화 작업)</span>
+        <span class="k">if</span> (op.progress &gt;= <span class="n">0.9f</span> &amp;&amp; !hasActivated)
+        {
+            hasActivated = <span class="k">true</span>;
+
+            <span class="c">// 1. 90% -&gt; 99%까지 천천히 차오르는 Creeping 연출</span>
+            <span class="k">float</span> fakeProgress = <span class="n">0.9f</span>;
+            <span class="k">float</span> creepSpeed = <span class="n">0.05f</span>;
+            <span class="k">while</span> (fakeProgress &lt; <span class="n">0.99f</span>)
+            {
+                fakeProgress += <span class="t">Time</span>.unscaledDeltaTime * creepSpeed;
+                <span class="k">if</span> (fakeProgress &gt; <span class="n">0.99f</span>) fakeProgress = <span class="n">0.99f</span>;
+                <span class="t">LoadingProgress</span> = fakeProgress;
+                <span class="k">yield</span> <span class="k">return</span> <span class="k">null</span>;
+            }
+
+            <span class="t">LoadingProgress</span> = <span class="n">0.99f</span>;
+            <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="f">WaitForSeconds</span>(<span class="n">0.1f</span>); <span class="c">// 99% 텍스트 시각화 보장</span>
+
+            <span class="c">// 2. 씬 활성화 허용 (이 시점에 발생하는 스레드 프리징을 99% 화면이 가려줌)</span>
+            op.allowSceneActivation = <span class="k">true</span>;
+        }
+        <span class="k">yield</span> <span class="k">return</span> <span class="k">null</span>;
+    }
+
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="f">WaitForEndOfFrame</span>();
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="f">WaitForSecondsRealtime</span>(<span class="n">0.5f</span>); <span class="c">// 타겟 씬 렌더링 팝인 현상 대기</span>
+    <span class="t">LoadingProgress</span> = <span class="n">1.0f</span>; <span class="c">// 모든 세팅이 완벽히 끝난 시점에 100% 출력</span>
+}</code></pre>
+        </figure>
+        <ul class="points">
+          <li>
+            <b>unscaledDeltaTime 사용</b> — 일시정지 등으로
+            <code>Time.timeScale</code>이 0이어도 로딩 연출이 멈추지 않음
+          </li>
+          <li>
+            <b>메모리 선정리</b> — 새 씬을 읽기 전에 <code>GC.Collect()</code>와
+            <code>UnloadUnusedAssets()</code>로 이전 씬의 미사용 리소스를 해제
+          </li>
+          <li>
+            <b>100%의 의미</b> — 씬 활성화와 첫 렌더링이 끝난 뒤에만 100%를
+            표시해, 숫자와 실제 상태를 일치시킴
+          </li>
+        </ul>
+      </section>
+      <section id="troubleshooting">
+        <h2><span class="num">03</span>문제 해결</h2>
+        <article class="case">
+          <h3 class="case-title">대량 아이템 획득 시 심각한 프레임 드랍</h3>
+          <dl>
+            <div class="row">
+              <dt>문제</dt>
+              <dd>
+                아이템 · 재화를 획득할 때마다 즉시 저장하는 구조라, 테스트
+                환경이나 보상 대량 획득 시 짧은 프레임 안에 디스크
+                쓰기(<code>SaveAllData</code>)가 7번 이상 연속 발생
+              </dd>
+            </div>
+            <div class="row">
+              <dt>해결</dt>
+              <dd>
+                <code>InventoryManager</code>의 획득 함수에
+                <code>bool autoSave = true</code> 매개변수를 추가해 단일 획득과
+                대량 획득의 저장 로직을 분리. 대량 지급 시에는
+                <code>false</code>로 넘기고, 모든 처리가 끝난 뒤 마지막에 한
+                번만 저장
+              </dd>
+            </div>
+            <div class="row outcome">
+              <dt>결과</dt>
+              <dd>
+                대량 지급 시 디스크 저장이 7회 이상 → 1회로 줄어 프레임 드랍
+                해소, 씬 전환과 대규모 데이터 처리 시 병목 해결
+              </dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+    </main>
+    <footer class="doc-footer">
+      <span>남수한 · 게임 클라이언트 프로그래머</span>
+      <a href="../index.html">포트폴리오로 돌아가기 →</a>
+    </footer>
+  </body>
+</html>

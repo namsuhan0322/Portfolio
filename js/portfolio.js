@@ -8,7 +8,8 @@ const safeLink = value => {
   const link = String(value || "").trim();
   if (!link) return "";
   if (/^(https?:\/\/|mailto:)/i.test(link)) return link;
-  if (/^[a-z0-9_./-]+$/i.test(link) && !link.startsWith("//")) return link;
+  // 상대 경로 + 선택적 쿼리스트링 허용 (예: project.html?id=farmdiary, 한글 id는 %XX로 인코딩됨)
+  if (/^[a-z0-9_./-]+(\?[a-z0-9_.%=&-]*)?$/i.test(link) && !link.startsWith("//")) return link;
   return "";
 };
 

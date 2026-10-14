@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sky Glider : Robo 기술 문서 — 풍선을 조종해 끝없이 하늘을 올라가는 하드코어 플랫포머 게임입니다.">
+<title>Sky Glider : Robo 기술 문서</title>
+<link rel="stylesheet" href="document.css">
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">← 포트폴리오</a>
+  <a class="sub" href="../project.html?id=sky-glider-robo">프로젝트 상세</a>
+</header>
+<main class="doc">
+  <p class="eyebrow">Technical Document · 플랫포머 · 캐주얼</p>
+  <h1>Sky Glider : Robo</h1>
+  <p class="summary">풍선을 조종해 끝없이 하늘을 올라가는 하드코어 플랫포머 게임입니다.</p>
+  <div class="facts"><div class="fact"><small>개발 기간</small><strong>2025.03 ~ 2025.06</strong><span>약 3개월</span></div><div class="fact"><small>팀 구성</small><strong>7명</strong><span>클라이언트 3 · 기획 2 · UI 아트 1 · 캐릭터·건물 아트 1</span></div><div class="fact"><small>담당</small><strong>메인 프로그래머</strong><span>플레이어 전체 · 각종 기믹</span></div><div class="fact"><small>개발 환경</small><strong>Unity 2022.3.58f1</strong><span>PC</span></div></div>
+  <div class="links"><a class="button primary" href="https://store.onstove.com/ko/games/101523" target="_blank" rel="noopener noreferrer">스토브에서 보기</a><a class="button" href="https://github.com/soeunparkk/MechaFloat_Project" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+  <ol class="toc"><li><a href="#features">담당 구현</a></li><li><a href="#code">핵심 코드</a></li></ol>
+  <section id="features"><h2><span class="num">01</span>담당 구현</h2><p class="lead">메인 프로그래머로 플레이어 전체를 맡고, 기획자가 코드 수정 없이 데이터를 바로 반영할 수 있도록 데이터 파이프라인과 에디터 툴을 만들었습니다.</p><div class="features"><article class="feature"><h3><span class="idx">1.</span>데이터 파이프라인 및 에디터 툴</h3><ul><li>JSON 데이터를 ScriptableObject로 자동 변환하는 에디터 툴 제작</li><li>기획 데이터를 즉시 반영할 수 있는 구조 구축</li></ul><p class="result"><b>결과</b>데이터 반영 시간 단축 및 개발 속도 향상</p></article><article class="feature"><h3><span class="idx">2.</span>플레이어 커스터마이징</h3><ul><li>런타임 프리팹 교체 및 Animator 리바인딩 처리</li><li>스킨 변경 시 장착 아이템의 Pivot 자동 동기화</li></ul><p class="result"><b>결과</b>캐릭터가 늘어나도 대응할 수 있는 확장 구조 확보</p></article><article class="feature"><h3><span class="idx">3.</span>인벤토리 및 아이템 상태 관리</h3><ul><li>단축키 기반 인벤토리 구조 설계</li><li>아이템 내구도와 UI 동기화</li></ul><p class="result"><b>결과</b>실시간 상태 반영 시스템 안정화</p></article><article class="feature"><h3><span class="idx">4.</span>업적 및 보상 시스템</h3><ul><li>ScriptableObject 기반 데이터베이스 구축</li><li>O(1) 탐색 구조 설계</li></ul><p class="result"><b>결과</b>시스템을 확장해도 성능 저하 없이 유지</p></article><article class="feature"><h3><span class="idx">5.</span>플랫포머 기믹</h3><ul><li>색상 판정, 이동 플랫폼, 소멸 발판 등 핵심 기믹 구현</li></ul><p class="result"><b>결과</b>게임 플레이 다양성 확보</p></article></div></section><section id="code"><h2><span class="num">02</span>핵심 코드</h2><p class="lead">아이템 데이터를 코드나 인스펙터에서 하나씩 입력하지 않고, 기획 JSON 한 파일에서 에셋과 데이터베이스까지 자동으로 만들어지도록 했습니다.</p><figure class="figure"><div class="steps">
+<div class="step"><strong>기획 JSON</strong><span>아이템 목록 작성</span></div>
+<div class="step"><strong>에디터 툴 실행</strong><span>JsonConvert로 List&lt;ItemData&gt; 파싱</span></div>
+<div class="step"><strong>ItemSO 에셋 생성</strong><span>Item_0001_이름.asset 규칙으로 저장</span></div>
+<div class="step"><strong>ItemDatabase 등록</strong><span>생성된 아이템을 중앙 DB에 자동 연결</span></div>
+</div><figcaption>JSON → ScriptableObject 변환 파이프라인</figcaption></figure><figure class="code"><figcaption class="code-head"><span>ConverterJsonToItemScriptableObjects() — JSON → ScriptableObject 자동 변환</span><span>C#</span></figcaption><pre><code><span class="c">// 핵심 로직: JSON 데이터를 읽어 ScriptableObject Asset으로 자동 생성 및 연동</span>
+<span class="k">private</span> <span class="k">void</span> <span class="f">ConverterJsonToItemScriptableObjects</span>()
+{
+    <span class="c">// 1. JSON 파일 파싱</span>
+    <span class="k">string</span> jsonText = <span class="t">File</span>.<span class="f">ReadAllText</span>(jsonFilePath);
+    <span class="t">List</span>&lt;<span class="t">ItemData</span>&gt; itemDataList = <span class="t">JsonConvert</span>.<span class="f">DeserializeObject</span>&lt;<span class="t">List</span>&lt;<span class="t">ItemData</span>&gt;&gt;(jsonText);
+    <span class="t">List</span>&lt;<span class="t">ItemSO</span>&gt; createdItems = <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">ItemSO</span>&gt;();
+
+    <span class="c">// 2. 파싱된 데이터를 기반으로 SO 인스턴스 생성 및 데이터 맵핑</span>
+    <span class="k">foreach</span> (<span class="k">var</span> itemData <span class="k">in</span> itemDataList)
+    {
+        <span class="t">ItemSO</span> itemSO = <span class="t">ScriptableObject</span>.<span class="f">CreateInstance</span>&lt;<span class="t">ItemSO</span>&gt;();
+        itemSO.id = itemData.id;
+        itemSO.itemName = itemData.itemName;
+        <span class="c">/* ... 세부 데이터 맵핑 생략 ... */</span>
+
+        <span class="c">// 3. ScriptableObject를 에셋 파일로 자동 저장</span>
+        <span class="k">string</span> assetPath = <span class="s">$"{outputFolder}/Item_{itemData.id.ToString("</span>D4<span class="s">")}_{itemData.nameEng}.asset"</span>;
+        <span class="t">AssetDatabase</span>.<span class="f">CreateAsset</span>(itemSO, assetPath);
+        createdItems.<span class="f">Add</span>(itemSO);
+    }
+
+    <span class="c">// 4. 중앙 관리용 데이터베이스 자동 등록 처리</span>
+    <span class="k">if</span> (creatDatabase &amp;&amp; createdItems.<span class="t">Count</span> &gt; <span class="n">0</span>)
+    {
+        <span class="t">ItemDatabaseSO</span> database = <span class="t">ScriptableObject</span>.<span class="f">CreateInstance</span>&lt;<span class="t">ItemDatabaseSO</span>&gt;();
+        database.items = createdItems;
+        <span class="t">AssetDatabase</span>.<span class="f">CreateAsset</span>(database, <span class="s">$"{outputFolder}/ItemDatabase.asset"</span>);
+    }
+}</code></pre></figure><ul class="points"><li><b>기획 데이터 분리</b> — 아이템 수치를 JSON에서 관리해, 데이터가 바뀌어도 코드를 수정하지 않고 툴만 다시 실행</li><li><b>에셋 이름 규칙</b> — <code>Item_0001_영문명.asset</code>처럼 ID를 4자리로 맞춰 프로젝트 창에서 ID 순으로 정렬되도록 함</li><li><b>DB 자동 연결</b> — 생성된 아이템 목록을 <code>ItemDatabaseSO</code>에 바로 등록해 수동 연결 누락을 방지</li></ul></section>
+</main>
+<footer class="doc-footer">
+  <span>남수한 · 게임 클라이언트 프로그래머</span>
+  <a href="../index.html">포트폴리오로 돌아가기 →</a>
+</footer>
+</body>
+</html>

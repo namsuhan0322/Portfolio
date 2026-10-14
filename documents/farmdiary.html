@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="FarmDiary 기술 문서 — &quot;다른 작업을 하면서도 농장을 키운다!&quot; 바탕화면 위에 투명하게 떠 있는 방치형 + 클리커 농사 시뮬레이션입니다.">
+<title>FarmDiary 기술 문서</title>
+<link rel="stylesheet" href="document.css">
+</head>
+<body>
+<header class="topbar">
+  <a href="../index.html">← 포트폴리오</a>
+  <a class="sub" href="../project.html?id=farmdiary">프로젝트 상세</a>
+</header>
+<main class="doc">
+  <p class="eyebrow">Technical Document · 시뮬레이션 · 전략 · 캐주얼</p>
+  <h1>FarmDiary</h1>
+  <p class="summary">&quot;다른 작업을 하면서도 농장을 키운다!&quot; 바탕화면 위에 투명하게 떠 있는 방치형 + 클리커 농사 시뮬레이션입니다.</p>
+  <div class="facts"><div class="fact"><small>개발 기간</small><strong>2024.09 ~ 2024.12</strong><span>약 3개월</span></div><div class="fact"><small>팀 구성</small><strong>5명</strong><span>클라이언트 2 · 기획 1 · UI 아트 1 · 캐릭터·건물 아트 1</span></div><div class="fact"><small>담당</small><strong>클라이언트 프로그래밍</strong><span>투명 오버레이 · 키보드 후킹 · 농사 AI FSM · UI 연결</span></div><div class="fact"><small>개발 환경</small><strong>Unity 2022.3.24f1</strong><span>PC · URP</span></div></div>
+  <div class="links"><a class="button primary" href="https://store.onstove.com/ko/games/4635" target="_blank" rel="noopener noreferrer">스토브에서 보기</a><a class="button" href="https://www.youtube.com/watch?v=MuO7iLbqNUI" target="_blank" rel="noopener noreferrer">플레이 영상</a><a class="button" href="https://github.com/jinjooyoung/FarmDiary" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+  <ol class="toc"><li><a href="#features">담당 구현</a></li><li><a href="#code">핵심 코드</a></li><li><a href="#troubleshooting">문제 해결</a></li></ol>
+  <section id="features"><h2><span class="num">01</span>담당 구현</h2><p class="lead">유니티 엔진 기능만으로는 만들 수 없는 "바탕화면 위에서 돌아가는 게임"을 위해, 운영체제 API를 직접 연동한 작업이 중심입니다.</p><div class="features"><article class="feature"><h3><span class="idx">1.</span>Windows API 기반 투명 오버레이 시스템</h3><ul><li><code>user32.dll</code>, <code>dwmapi.dll</code>을 연동해 바탕화면 위에서 실행되는 투명 윈도우 환경 구축</li><li>Raycast로 포인터 위치를 판별해 UI 밖의 클릭은 바탕화면으로 통과(Click-Through)</li><li>백그라운드 실행과 최상단 고정으로 데스크톱 위젯 같은 UX 제공</li></ul><p class="result"><b>결과</b>기존 게임 실행 방식과 차별화된, 다른 작업과 병행하는 멀티태스킹 환경 구현</p></article><article class="feature"><h3><span class="idx">2.</span>OS 레벨 키보드 후킹 시스템</h3><ul><li><code>SetWindowsHookEx</code>로 게임 창이 비활성 상태여도 키 입력을 감지</li><li>입력 데이터를 업적 · 재화 시스템과 연동</li><li><code>UnhookWindowsHookEx</code>로 후크를 해제해 안정성 확보</li></ul><p class="result"><b>결과</b>게임 밖의 행동(타이핑)까지 게임 진행으로 확장할 수 있는 구조 확보</p></article><article class="feature"><h3><span class="idx">3.</span>FSM 기반 자동화 농사 AI</h3><ul><li>행동 단위를 상태(State)로 분리해 설계</li><li>작물 상태 데이터에 따라 자동으로 상태 전이</li></ul><p class="result"><b>결과</b>기능을 추가할 때 기존 코드를 수정하지 않고 상태만 추가해 확장 가능</p></article><article class="feature"><h3><span class="idx">4.</span>카메라 · UI 동적 대응</h3><ul><li>줌 레벨에 따라 UI 위치와 크기 자동 조정</li><li>극단적인 화면 배율에서도 UI 가독성 유지</li></ul><p class="result"><b>결과</b>다양한 해상도와 상황에서 일관된 사용자 경험 유지</p></article></div></section><section id="code"><h2><span class="num">02</span>핵심 코드</h2><p class="lead">투명 창의 핵심은 "언제 클릭을 받고, 언제 바탕화면으로 흘려보낼지"입니다. 포인터가 게임 UI 위에 있는지에 따라 윈도우 확장 스타일을 바꿔, 게임과 바탕화면을 동시에 쓸 수 있게 했습니다.</p><figure class="figure"><div class="decision">포인터가 게임 UI 위에 있는가? (Raycast 판별)</div>
+<div class="branches"><div class="branch"><small>예 — UI 위</small><code>WS_EX_LAYERED</code><br>게임 창이 클릭을 받아 UI와 상호작용</div>
+<div class="branch"><small>아니오 — UI 밖</small><code>WS_EX_LAYERED | WS_EX_TRANSPARENT</code><br>클릭이 창을 통과해 바탕화면 · 다른 프로그램으로 전달</div></div>
+<figcaption>SetClickThrough()의 분기. 스타일을 바꾼 뒤 SetLayeredWindowAttributes로 창 불투명도를 유지합니다.</figcaption></figure><figure class="code"><figcaption class="code-head"><span>SetClickThrough() — 클릭 스루 상태 동적 전환</span><span>C#</span></figcaption><pre><code><span class="c">// 핵심 로직: UI 터치 여부에 따른 윈도우 클릭 스루(Click-Through) 상태 동적 전환</span>
+<span class="k">private</span> <span class="k">void</span> <span class="f">SetClickThrough</span>()
+{
+    <span class="c">// Raycast를 통해 현재 마우스 포인터가 게임 UI 위에 있는지 판별</span>
+    <span class="k">bool</span> isPointerOverUI = <span class="f">FocusForInput</span>();
+    <span class="t">IntPtr</span> hwnd = <span class="f">GetUnityWindowHandle</span>();
+    <span class="k">if</span> (hwnd == <span class="t">IntPtr</span>.<span class="t">Zero</span>) <span class="k">return</span>;
+
+    <span class="c">// 마우스가 UI 위에 있으면 상호작용 가능(WS_EX_LAYERED),</span>
+    <span class="c">// 그 외 영역이면 바탕화면 클릭이 통과되도록(WS_EX_TRANSPARENT) 스타일 변경</span>
+    <span class="k">uint</span> newStyle = isPointerOverUI
+        ? WS_EX_LAYERED
+        : (WS_EX_LAYERED | WS_EX_TRANSPARENT);
+
+    <span class="f">SetWindowLong</span>(hwnd, GWL_EXSTYLE, newStyle);
+    <span class="f">SetLayeredWindowAttributes</span>(hwnd, <span class="n">0</span>, byte.<span class="t">MaxValue</span>, LWA_ALPHA);
+}</code></pre></figure><ul class="points"><li><b>창 핸들 검증</b> — <code>GetUnityWindowHandle()</code>이 실패하면 즉시 반환해 잘못된 핸들로 Win32 API를 호출하지 않도록 방어</li><li><b>스타일 조합</b> — 항상 <code>WS_EX_LAYERED</code>를 유지한 채 <code>WS_EX_TRANSPARENT</code>만 붙였다 떼어, 투명 렌더링은 유지하면서 입력만 전환</li></ul></section><section id="troubleshooting"><h2><span class="num">03</span>문제 해결</h2><article class="case"><h3 class="case-title">빌드하면 투명해야 할 배경이 검은 화면으로 출력</h3><dl><div class="row"><dt>문제</dt><dd>Windows API로 투명 오버레이를 적용했지만, 빌드한 게임에서 배경이 투명하지 않고 검은 화면으로 출력</dd></div><div class="row"><dt>추적</dt><dd>약 4~5일간 원인을 추적하며 URP 렌더링 구조까지 분석</dd></div><div class="row"><dt>원인</dt><dd>URP 카메라의 HDR이 켜져 있으면 알파 채널이 없는 HDR 컬러 버퍼 포맷으로 렌더링되어, 투명도(알파) 정보가 창에 전달되지 않음</dd></div><div class="row"><dt>해결</dt><dd>카메라의 HDR 옵션을 끄고 빌드</dd></div><div class="row outcome"><dt>결과</dt><dd>빌드 환경에서 투명 백그라운드가 정상 적용</dd></div></dl></article></section>
+</main>
+<footer class="doc-footer">
+  <span>남수한 · 게임 클라이언트 프로그래머</span>
+  <a href="../index.html">포트폴리오로 돌아가기 →</a>
+</footer>
+</body>
+</html>
