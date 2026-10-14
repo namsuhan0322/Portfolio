@@ -2,18 +2,13 @@
   "profile": {
     "name": "남수한",
     "job": "게임 클라이언트 프로그래머",
-    "introduction": "Unity와 C#을 활용해 게임 시스템과 UI를 구현합니다. 플레이 가능한 결과와 작업 문서로 개발 과정을 증명합니다.",
+    "introduction": "Unity와 C#을 활용해 게임 시스템과 UI를 구현합니다. 버그는 우회하지 않고 원인까지 추적합니다. 플레이어가 재미에만 집중할 수 있는 시스템을 만듭니다.",
     "email": "rnatpakfl@gmail.com",
     "github": "https://github.com/namsuhan0322",
-    "profileImage": "images/profile.png",
+    "profileImage": "images/profile.jpg",
     "resume": "resume.html"
   },
-  "skills": [
-    "C#",
-    "Unity",
-    "GitHub",
-    "JSON"
-  ],
+  "skills": ["C#", "Unity", "GitHub", "JSON"],
   "projects": [
     {
       "id": "farmdiary",
@@ -71,6 +66,63 @@
         "play": "https://store.onstove.com/ko/games/101523",
         "video": "",
         "github": "https://github.com/soeunparkk/MechaFloat_Project",
+        "document": ""
+      }
+    },
+    {
+      "id": "이세계-물고기",
+      "title": "이세계 물고기",
+      "thumbnail": "images/Fish.png",
+      "description": "지루한 낚시게임에 배틀의 긴장감을 더해 만들게 된 물고기 배틀 게임입니다.",
+      "genre": "시뮬레이션, 전략, 캐주얼",
+      "platform": "PC",
+      "period": "2025.09 ~ 2025.12",
+      "team": {
+        "size": 7,
+        "myRole": "클라이언트 프로그래밍"
+      },
+      "contributions": [
+        "Manager 패턴 기반 핵심 시스템 설계",
+        "낚시 미니게임 컨트롤 로직 구현",
+        "Coroutine 기반 이벤트 제어 시스템 설계",
+        "확률 기반 스폰 및 자동화 파이프라인 구축"
+      ],
+      "problemSolving": [],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/103410",
+        "video": "",
+        "github": "https://github.com/ahyun04/25_2_team",
+        "document": ""
+      }
+    },
+    {
+      "id": "last-rites",
+      "title": "Last Rites",
+      "thumbnail": "images/Last-Rites.png",
+      "description": "저희 LastRites 게임은 지루한 잡몹 사냥과 무의미한 파밍을 과감히 덜어내고, 오직 거대 보스와의 숨 막히는 공방에만 집중한  보스 레이드 액션 게임입니다.",
+      "genre": "액션, 전투",
+      "platform": "PC",
+      "period": "2026.01 ~ 2026.06",
+      "team": {
+        "size": 2,
+        "myRole": "기획, 클라이언트 프로그래밍"
+      },
+      "contributions": [
+        "Action 델리게이트 기반 Actor & 전투 아키텍처 설계",
+        "비동기 씬 로딩 최적화 및 동적 UX 시스템 구현",
+        "파일 I/O 병목 최적화 및 UI 컴포넌트 자동화"
+      ],
+      "problemSolving": [
+        {
+          "problem": "인벤토리에 아이템 및 재화를 획득할 때마다 즉시 세이브를 진행하는 로직으로 인해, 테스트 환경이나 보상 대량 획득 시 짧은 프레임 내에 디스크 쓰기 연산(SaveAllData)이 7번 이상 연속 발생하여 심각한 렉(프레임 드랍) 유발.",
+          "solution": "InventoryManager의 획득 함수에 bool autoSave = true 매개변수를 추가하여 단일 획득과 대량 획득 시의 저장 로직을 분리. 대량 지급 로직에서는 autoSave를 false로 넘기고 모든 처리가 끝난 뒤 마지막에 단 한 번만 디스크에 저장하도록 아키텍처 수정.",
+          "result": "불필요한 반복 File I/O 연산을 100% 제거하여 씬 전환 및 대규모 데이터 처리 시의 병목 현상을 완벽하게 해결함."
+        }
+      ],
+      "links": {
+        "play": "https://store.onstove.com/ko/games/104922",
+        "video": "https://www.youtube.com/watch?v=55jtr3SpkoA",
+        "github": "https://github.com/namsuhan0322/Last-Rites",
         "document": ""
       }
     }
