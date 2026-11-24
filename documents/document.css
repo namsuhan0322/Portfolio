@@ -107,6 +107,21 @@ code { padding: 1px 6px; border-radius: 5px; background: var(--accent-soft); col
 .case .row.outcome { background: var(--accent-soft); }
 .case .row.outcome dd { color: var(--text); font-weight: 600; }
 
+/* 표 · 화면 그림 (틱타 듀얼 QA 문서에서 씀) */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.table-wrap + .table-wrap, .figure + .points { margin-top: 14px; }
+table.grid { width: 100%; min-width: 520px; border-collapse: collapse; font-size: .92rem; }
+table.grid th, table.grid td { padding: 12px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+table.grid th { background: var(--accent-soft); color: #3a2fa0; font-size: .82rem; white-space: nowrap; }
+table.grid tr:last-child td { border-bottom: 0; }
+table.grid td:first-child { color: var(--text); font-weight: 700; white-space: nowrap; }
+table.grid td { color: var(--body); }
+.sub-title { margin: 28px 0 12px; font-size: 1.05rem; }
+.figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 10px; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.facts.stats { margin-top: 0; }
+.facts.stats strong { font-size: 1.35rem; letter-spacing: -.02em; }
+
 footer.doc-footer { max-width: 860px; margin: 0 auto; padding: 28px 16px 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: .86rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 footer.doc-footer a { color: var(--accent); font-weight: 700; text-decoration: none; }
 
@@ -118,6 +133,7 @@ footer.doc-footer a { color: var(--accent); font-weight: 700; text-decoration: n
   .doc { padding-top: 36px; }
   .facts { grid-template-columns: 1fr 1fr; }
   .branches { grid-template-columns: 1fr; }
+  .shots { grid-template-columns: 1fr; }
   .timeline { grid-template-columns: 1fr 1fr; row-gap: 16px; }
   .feature { padding: 18px; }
   .case .row { grid-template-columns: 1fr; gap: 4px; padding: 14px 18px; }
